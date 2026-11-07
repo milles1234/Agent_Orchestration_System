@@ -1,0 +1,35 @@
+[project]
+name = "agent-orchestration-backend"
+version = "0.1.0"
+description = "Multi-agent orchestration platform with LangGraph, HITL, and memory systems"
+authors = [{ name = "Deepanshu Yadav" }]
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.28.0",
+    "sqlalchemy>=2.0.28",
+    "psycopg2-binary>=2.9.9",
+    "alembic>=1.13.1",
+    "pydantic>=2.6.4",
+    "pydantic-settings>=2.2.1",
+    "langgraph>=0.1.0",
+    "langchain>=0.1.12",
+    "langchain-openai>=0.1.0",
+    "langchain-anthropic>=0.1.4",
+    "redis>=5.0.2",
+    "celery>=5.3.6",
+    "chromadb>=0.4.24",
+    "opentelemetry-api>=1.24.0",
+    "opentelemetry-sdk>=1.24.0",
+    "opentelemetry-instrumentation-fastapi>=0.45b0",
+    "requests>=2.31.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.1.1",
+    "black>=24.3.0",
+    "flake8>=7.0.0",
+]
