@@ -1,26 +1,30 @@
+"""Code Execution Specialist Agent."""
+
+from typing import List, Optional
+from langchain_core.language_models import BaseChatModel
+from langchain_core.tools import BaseTool
+
 from backend.src.agents.specialist.base import BaseSpecialistAgent
-from langchain_core.prompts import ChatPromptTemplate
-from typing import Dict, Any
 
 
 class CoderSpecialist(BaseSpecialistAgent):
-    def execute(self, subtask_description: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert Software Engineer and Code Execution Specialist. Write clean, bug-free code and use available sandbox or file tools to accomplish the task."),
-            ("human", "Subtask: {subtask}\nInputs: {inputs}")
-        ])
+    """Specialist responsible for code writing, syntax verification, and code execution."""
 
-        bound_llm = self.llm.bind_tools(list(self.tools.values()))
+    def __init__(
+        self,
+        name: str = "coder",
+        llm: Optional[BaseChatModel] = None,
+        tools: Optional[List[BaseTool]] = None,
+    ):
+        super().__init__(name=name, llm=llm, domain="code execution", tools=tools)
 
-        try:
-            response = bound_llm.invoke(prompt.format(subtask=subtask_description, inputs=inputs))
-            return {
-                "status": "success",
-                "output": response.content,
-                "tool_calls": getattr(response, "tool_calls", [])
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e)
-            }
+    def get_system_prompt(self) -> str:
+        return (
+            "You are an expert Software Engineer and Code Execution Specialist Agent. Your mission is to "
+            "write clean, modular, and bug-free code, perform static syntax validation, and execute code snippets "
+            "using your execution sandbox tools. Always inspect runtime outputs and handle potential errors proactively."
+        )
+
+
+# Backward compatibility alias
+CodeExecutionSpecialist = CoderSpecialist

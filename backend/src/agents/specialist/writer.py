@@ -1,27 +1,27 @@
+"""Writing Specialist Agent."""
+
+from typing import List, Optional
+from langchain_core.language_models import BaseChatModel
+from langchain_core.tools import BaseTool
+
 from backend.src.agents.specialist.base import BaseSpecialistAgent
-from langchain_core.prompts import ChatPromptTemplate
-from typing import Dict, Any
 
 
 class WriterSpecialist(BaseSpecialistAgent):
-    def execute(self, subtask_description: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert Technical Writer and Communications Specialist. Synthesize raw notes, research, and code outputs into a polished, professional final document."),
-            ("human", "Subtask: {subtask}\nInputs: {inputs}")
-        ])
+    """Specialist responsible for synthesis, documentation, drafting reports, and executive communication."""
 
-        # Writers typically format text, but can also bind tools if file writing or external publishing is needed
-        bound_llm = self.llm.bind_tools(list(self.tools.values())) if self.tools else self.llm
+    def __init__(
+        self,
+        name: str = "writer",
+        llm: Optional[BaseChatModel] = None,
+        tools: Optional[List[BaseTool]] = None,
+    ):
+        super().__init__(name=name, llm=llm, domain="writing", tools=tools)
 
-        try:
-            response = bound_llm.invoke(prompt.format(subtask=subtask_description, inputs=inputs))
-            return {
-                "status": "success",
-                "output": response.content,
-                "tool_calls": getattr(response, "tool_calls", [])
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e)
-            }
+    def get_system_prompt(self) -> str:
+        return (
+            "You are an expert Technical Writer and Communications Specialist Agent. Your mission is to "
+            "synthesize raw research, statistical insights, and code outputs into clear, compelling, and "
+            "rigorously formatted deliverables. Use your Markdown reporting, text summarization, and proofreading "
+            "tools to produce executive-ready documents."
+        )

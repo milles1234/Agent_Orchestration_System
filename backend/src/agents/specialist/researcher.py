@@ -1,40 +1,27 @@
+"""Research Specialist Agent."""
 
+from typing import List, Optional
+from langchain_core.language_models import BaseChatModel
+from langchain_core.tools import BaseTool
 
-
-from backend.src.agents.state import SubTask
-from langchain_core.prompts import ChatPromptTemplate
-from ast import Dict, Any
 from backend.src.agents.specialist.base import BaseSpecialistAgent
 
+
 class ResearchSpecialist(BaseSpecialistAgent):
-    def execute(self, substack_description: str, inputs: Dict[str, Any]) -> Dict[str, Any]:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "You are an expert Research Agent. Use avaliable tools to answer the user query accurately."),
-            ("human", "Subtask: {subtask}\nInputs: {inputs}")
-        ])
-        
+    """Specialist responsible for deep research, information gathering, and fact retrieval."""
 
-        # chain execuation logic with tools bound with self.llm
+    def __init__(
+        self,
+        name: str = "researcher",
+        llm: Optional[BaseChatModel] = None,
+        tools: Optional[List[BaseTool]] = None,
+    ):
+        super().__init__(name=name, llm=llm, domain="research", tools=tools)
 
-        bound_llm = self.llm.bind_tools(list(self.tools.values()))
-
-
-        try: 
-            response = bound_llm.invoke(prompt.format(subtask= substack_description, inputs=inputs))
-            return {
-                "status": "success",
-                "output": response.content,
-                "tool_calls": getattr(response, "tool_calls", [])
-            }
-        except Exception as e:
-            return {
-                "status": "error",
-                "error": str(e)
-            }
-
-        
-
-
-
-
-
+    def get_system_prompt(self) -> str:
+        return (
+            "You are an expert Research Specialist Agent. Your mission is to gather accurate, "
+            "comprehensive, and verified factual information. Use your web search, document retrieval, "
+            "and citation tools to discover domain evidence. Always cite your sources and provide structured, "
+            "objective summaries of the findings."
+        )

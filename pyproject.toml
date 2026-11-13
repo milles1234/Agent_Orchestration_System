@@ -33,3 +33,6 @@ dev = [
     "black>=24.3.0",
     "flake8>=7.0.0",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
